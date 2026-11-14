@@ -1,0 +1,36 @@
+name: Offline tests
+
+on: [push, pull_request]
+
+jobs:
+  minimal:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -r examples/minimal/requirements.txt
+      - run: python -m examples.minimal
+      - run: python -m unittest discover -s tests -p test_minimal.py -v
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -r examples/sql_math_tracer/requirements.txt
+      - run: python -m unittest discover -s tests -v
+      - run: python -m unittest discover -s examples/sql_math_tracer -v
+      - run: python -m unittest discover -s examples/aws_finops -v
+      - run: python -m unittest discover -s examples/online_store -v
+      - run: python -m examples.online_store.acceptance --replays
+      - run: python -m examples.online_store.semantic --check
+      - run: python -m examples.aws_finops.benchmark
+      - run: python -m examples.aws_finops.benchmark --replays
+      - run: python -m examples.aws_finops.benchmark --lookup-cases --replays
+      - run: python -m examples.aws_finops.benchmark --claims-cases
+      - run: python -m examples.aws_finops.benchmark --claims-cases --replays
+      - run: python -m examples.aws_finops.semantic --check
+      - run: python scripts/check_docs.py

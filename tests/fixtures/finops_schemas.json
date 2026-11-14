@@ -1,0 +1,89 @@
+{
+  "Candidate": {
+    "additionalProperties": false,
+    "properties": {
+      "recommendation_id": {
+        "title": "Recommendation Id",
+        "type": "string"
+      },
+      "instance_id": {
+        "title": "Instance Id",
+        "type": "string"
+      },
+      "instance_type": {
+        "title": "Instance Type",
+        "type": "string"
+      },
+      "architecture": {
+        "title": "Architecture",
+        "type": "string"
+      },
+      "target_type": {
+        "title": "Target Type",
+        "type": "string"
+      },
+      "target_architecture": {
+        "title": "Target Architecture",
+        "type": "string"
+      },
+      "performance_risk": {
+        "maximum": 4,
+        "minimum": 0,
+        "title": "Performance Risk",
+        "type": "number"
+      },
+      "monthly_savings_cents": {
+        "title": "Monthly Savings Cents",
+        "type": "integer"
+      }
+    },
+    "required": [
+      "recommendation_id",
+      "instance_id",
+      "instance_type",
+      "architecture",
+      "target_type",
+      "target_architecture",
+      "performance_risk",
+      "monthly_savings_cents"
+    ],
+    "title": "Candidate",
+    "type": "object"
+  },
+  "Evidence": {
+    "additionalProperties": false,
+    "properties": {
+      "instance_id": {
+        "title": "Instance Id",
+        "type": "string"
+      },
+      "metric": {
+        "enum": [
+          "cpu",
+          "memory"
+        ],
+        "title": "Metric",
+        "type": "string"
+      },
+      "p95_percent": {
+        "maximum": 100,
+        "minimum": 0,
+        "title": "P95 Percent",
+        "type": "number"
+      },
+      "days": {
+        "minimum": 0,
+        "title": "Days",
+        "type": "integer"
+      }
+    },
+    "required": [
+      "instance_id",
+      "metric",
+      "p95_percent",
+      "days"
+    ],
+    "title": "Evidence",
+    "type": "object"
+  }
+}

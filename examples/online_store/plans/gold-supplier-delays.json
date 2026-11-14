@@ -1,0 +1,10 @@
+{
+  "measure": "late_deliveries",
+  "group_by": "supplier",
+  "periods": ["2026-Q3"],
+  "shape": "top_k",
+  "top": 5,
+  "region": "all",
+  "channel": "all",
+  "customer_tier": "gold"
+}

@@ -1,0 +1,19 @@
+{
+  "id": "minimum-monthly-sales",
+  "correction": "Don't restock anything selling under $50/month.",
+  "owner": "Merchandising",
+  "rule_id": "store.minimum_sales",
+  "parameter": "minimum_monthly_sales_cents",
+  "value": 5000,
+  "stages": [
+    {"level": "documented", "policy": "base", "enforced": false},
+    {"level": "checked", "policy": "minimum-monthly-sales", "enforced": true},
+    {"level": "tested", "policy": "minimum-monthly-sales", "enforced": true,
+     "boundary_cases_cents": [4900, 5000]}
+  ],
+  "original_products": ["P-101", "P-102", "P-107", "P-108", "P-109"],
+  "corrected_products": ["P-101", "P-102", "P-107", "P-108", "P-110"],
+  "original_total_cents": 1310000,
+  "corrected_total_cents": 1295000,
+  "rationale": "Use the preceding completed month's product net revenue, with refunds recognized on return dates. The floor is inclusive. Forecast amounts remain independent synthetic inputs."
+}
