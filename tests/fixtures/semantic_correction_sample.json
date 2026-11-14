@@ -1,0 +1,40 @@
+{
+  "trials": [
+    {
+      "scenario": "plan_basic",
+      "agent": {
+        "tool_calls": [
+          {
+            "arguments": {
+              "code": "candidates = query(CandidatesQuery(account=account))\nevidence = {}\nfor metric in required_metrics:\n    for row in query(EvidenceQuery(account=account, metric=metric)):\n        evidence[(row.instance_id, metric)] = (row.p95_percent, row.days)\nchosen = []\nseen = set()\ntotal = 0\nfor c in sorted(candidates, key=lambda c: (-c.monthly_savings_cents, c.recommendation_id)):\n    if c.instance_id in seen or c.architecture != c.target_architecture or c.performance_risk > 1.0 or c.monthly_savings_cents <= 0:\n        continue\n    eligible = True\n    for metric in required_metrics:\n        e = evidence.get((c.instance_id, metric))\n        if e is None or e[1] < 14 or e[0] > (60.0 if metric == \"cpu\" else 80.0):\n            eligible = False\n    if eligible:\n        chosen.append({\"recommendation_id\": c.recommendation_id})\n        seen.add(c.instance_id)\n        total += c.monthly_savings_cents\n    if len(chosen) == 5:\n        break\nRightsizingPlan(proposals=chosen, monthly_savings_cents=total,\n               outcome=\"recommendations\" if chosen else \"no_eligible_recommendations\")\n"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "scenario": "plan_seed_41",
+      "agent": {
+        "tool_calls": [
+          {
+            "arguments": {
+              "code": "candidates = query(CandidatesQuery(account=account))\nevidence = {}\nfor metric in required_metrics:\n    for row in query(EvidenceQuery(account=account, metric=metric)):\n        evidence[(row.instance_id, metric)] = (row.p95_percent, row.days)\nchosen = []\nseen = set()\ntotal = 0\nfor c in sorted(candidates, key=lambda c: (-c.monthly_savings_cents, c.recommendation_id)):\n    if c.instance_id in seen or c.architecture != c.target_architecture or c.performance_risk > 1.0 or c.monthly_savings_cents <= 0:\n        continue\n    eligible = True\n    for metric in required_metrics:\n        e = evidence.get((c.instance_id, metric))\n        if e is None or e[1] < 14 or e[0] > (60.0 if metric == \"cpu\" else 80.0):\n            eligible = False\n    if eligible:\n        chosen.append({\"recommendation_id\": c.recommendation_id})\n        seen.add(c.instance_id)\n        total += c.monthly_savings_cents\n    if len(chosen) == 5:\n        break\nRightsizingPlan(proposals=chosen, monthly_savings_cents=total,\n               outcome=\"recommendations\" if chosen else \"no_eligible_recommendations\")\n"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "scenario": "cost_basic",
+      "agent": {
+        "tool_calls": [
+          {
+            "arguments": {
+              "code": "before = query(CostQuery(account=account, month=previous_period, metric=\"NetAmortizedCost\", group_by=\"SERVICE\"))\nafter = query(CostQuery(account=account, month=period, metric=\"NetAmortizedCost\", group_by=\"SERVICE\"))\nchanges = {}\nfor row in before:\n    changes[row.service] = -row.cost_cents\nfor row in after:\n    changes[row.service] = changes.get(row.service, 0) + row.cost_cents\nCostComparison(total_change_cents=sum(changes.values()), services=[\n    {\"service\": s, \"change_cents\": changes[s]} for s in sorted(changes, key=lambda s: (-changes[s], s))])\n"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

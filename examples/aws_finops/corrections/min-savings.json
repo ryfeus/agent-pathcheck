@@ -1,0 +1,22 @@
+{
+  "id": "min-savings",
+  "question_case": "rightsizing",
+  "base_mode": "memory-required",
+  "candidate_mode": "memory-required-min-savings",
+  "statement": "Don't recommend resizes that save less than the agreed minimum per month.",
+  "wrong_program": "candidates = query(CandidatesQuery(account=account))\nevidence = {}\nfor metric in required_metrics:\n    for row in query(EvidenceQuery(account=account, metric=metric)):\n        evidence[(row.instance_id, metric)] = (row.p95_percent, row.days)\nchosen = []\nseen = set()\ntotal = 0\nfor c in sorted(candidates, key=lambda c: (-c.monthly_savings_cents, c.recommendation_id)):\n    if c.instance_id in seen or c.architecture != c.target_architecture or c.performance_risk > 1.0 or c.monthly_savings_cents <= 0:\n        continue\n    eligible = True\n    for metric in required_metrics:\n        e = evidence.get((c.instance_id, metric))\n        if e is None or e[1] < 14 or e[0] > (60.0 if metric == \"cpu\" else 80.0):\n            eligible = False\n    if eligible:\n        chosen.append({\"recommendation_id\": c.recommendation_id})\n        seen.add(c.instance_id)\n        total += c.monthly_savings_cents\n    if len(chosen) == 5:\n        break\nRightsizingPlan(proposals=chosen, monthly_savings_cents=total,\n               outcome=\"recommendations\" if chosen else \"no_eligible_recommendations\")\n",
+  "proposed_rule": {
+    "rule_id": "rightsizing.min_savings",
+    "summary": "Require the agreed minimum estimated savings",
+    "level": "tested",
+    "owner": "reference-example",
+    "source": "correction:min-savings",
+    "why": "Small savings may not justify change risk."
+  },
+  "minimum_savings_cents": 8000,
+  "fixtures": [
+    "min_savings_boundary",
+    "min_savings_basic",
+    "min_savings_seed_41"
+  ]
+}

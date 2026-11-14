@@ -1,0 +1,2 @@
+pydantic-monty==1.5.0
+pydantic==2.14.3
